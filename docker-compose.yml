@@ -1,35 +1,30 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - mode: ingress
+        target: 5000
+        published: 3000
     depends_on:
-      - postgres
+      - database
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgres://postgres:password@postgres:5432/taskmanager
-      - PGHOST=postgres
+      - DATABASE_URL=postgres://postgres:password@database:5432/postgres
+      - PGHOST=database
       - PGUSER=postgres
       - PGPASSWORD=password
-      - PGDATABASE=taskmanager
+      - PGDATABASE=postgres
       - PGPORT=5432
     restart: unless-stopped
 
-  postgres:
+  database:
     image: postgres:16
     ports:
-      - "5432:5432"
+      - mode: host
+        target: 5432
+        published: 5432
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=taskmanager
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
-
-volumes:
-  postgres-data:
