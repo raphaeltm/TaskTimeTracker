@@ -1,6 +1,6 @@
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { PgStorage } from "./pg-storage";
 import { 
   insertTaskSchema, 
   updateTaskSchema, 
@@ -12,6 +12,7 @@ import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
+  const storage = new PgStorage();
   
   // Get all tasks for a user
   apiRouter.get("/tasks/:userId", async (req: Request, res: Response) => {
@@ -171,12 +172,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User ID is required" });
       }
       
-      const tasks = await storage.getTasks(userId);
-      
-      // Delete each task
-      for (const task of tasks) {
-        await storage.deleteTask(task.id);
-      }
+      // Use the clearAllTasks method
+      await storage.clearAllTasks(userId);
       
       return res.status(204).send();
     } catch (error) {
