@@ -23,9 +23,8 @@ const useTasks = () => {
   }, []);
   
   // Fetch user settings
-  const { data: settings } = useQuery({
+  const { data: settings } = useQuery<{ dailyTimeLimit: number }>({
     queryKey: [`/api/settings/${userId}`],
-    queryFn: undefined,
     enabled: !!userId,
   });
   
@@ -39,7 +38,6 @@ const useTasks = () => {
   // Fetch tasks
   const { data: tasks = [] } = useQuery<Task[]>({
     queryKey: [`/api/tasks/${userId}`],
-    queryFn: undefined,
     enabled: !!userId,
   });
   

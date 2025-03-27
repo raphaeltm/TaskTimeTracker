@@ -98,7 +98,12 @@ export class MemStorage implements IStorage {
   
   async createUserSettings(insertSettings: InsertUserSettings): Promise<UserSettings> {
     const id = this.settingsCurrentId++;
-    const settings: UserSettings = { ...insertSettings, id };
+    // Ensure dailyTimeLimit is provided with a default value if not present
+    const settings: UserSettings = { 
+      ...insertSettings,
+      dailyTimeLimit: insertSettings.dailyTimeLimit || 240, // Default to 4 hours
+      id 
+    };
     this.settings.set(insertSettings.userId, settings);
     return settings;
   }
